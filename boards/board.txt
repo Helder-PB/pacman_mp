@@ -1,0 +1,11 @@
+10 10
+  BBBBB   \n
+  B   BB  \n
+B   B  B  \n
+B  BBB   B\n
+    B    B\n
+         B\n
+  BB   B  \n
+  B   BB  \n
+ BB  BB   \n
+          \n
