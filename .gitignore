@@ -2,4 +2,8 @@
 *.o
 *.out
 *.so
+
+# ignore folders
+.vscode
+
 #ignore modifications inside folders:
