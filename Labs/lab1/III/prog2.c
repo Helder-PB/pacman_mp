@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <dlfcn.h>
 
 /* include the correct .h file */
 
@@ -10,6 +11,7 @@ int main(){
 	int a;
 	char line[100];
 	char library_name[100];
+	char *error;
 
 	printf("What version of the functions you whant to use?\n");
 	printf("\t1 - Normal    (lib1)\n");
@@ -30,16 +32,39 @@ int main(){
 	}
 	/* load library from name library_name */
 
-
+	void *lib;
+	lib = dlopen(library_name,RTLD_LAZY);
+	if(!lib){
+		fprintf(stderr, "%s\n", dlerror());
+        exit(EXIT_FAILURE);
+	}
 	/* declare pointers to functions */
 
+	
+	void (*func_1)(void);
+	void (*func_2)(void);
+	
+	
 	/*load func_1 from loaded library */
-
+	func_1 = dlsym(lib,"func_1");
+	error = dlerror();
+	if(error != NULL){
+		fprintf(stderr,"%s\n",error);
+		exit(EXIT_FAILURE);
+	}
 	/*load func_2 from loaded library */
+	func_2 = dlsym(lib,"func_2");
+	error = dlerror();
+	if(error != NULL){
+		fprintf(stderr,"%s\n",error);
+		exit(EXIT_FAILURE);
+	}
 
 	/* call func_1 from whichever library was loaded */
-
+	(*func_1)();
 	/* call func_2 from whichever library was loaded */
+	(*func_2)();
 
+	dlclose(lib);
 	exit(0);
 }
