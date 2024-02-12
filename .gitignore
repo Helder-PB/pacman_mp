@@ -1,4 +1,5 @@
 # ignore compiled files
 *.o
-
+*.out
+*.so
 #ignore modifications inside folders:
