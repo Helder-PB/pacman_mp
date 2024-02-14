@@ -1,6 +1,5 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
-#include "../configs.h"
 
 int screen_width;
 int screen_height;
@@ -14,7 +13,6 @@ SDL_Texture *display;
 SDL_Surface *screen;
 SDL_Texture* monster;
 SDL_Texture* pacman;
-SDL_Texture* powerpacman;
 SDL_Texture* lemon;
 SDL_Texture* brick;
 SDL_Texture* cherry;
@@ -60,9 +58,9 @@ int create_board_window(int dim_x, int dim_y){
    }
 
 //load monster
- 	SDL_Surface* loadedSurface = IMG_Load(IMG("monster.png"));
+ 	SDL_Surface* loadedSurface = IMG_Load("./monster.png");
    if( loadedSurface == NULL ){
-       printf( "Unable to load image %s! SDL_image Error: %s\n", IMG("monster.png"), IMG_GetError() );
+       printf( "Unable to load image %s! SDL_image Error: %s\n", "./monster.png", IMG_GetError() );
  			exit(-1);
    } else {
 			 monster = SDL_CreateTextureFromSurface(renderer, loadedSurface);
@@ -70,28 +68,19 @@ int create_board_window(int dim_x, int dim_y){
    }
 
 	 //load pacman
-	 loadedSurface = IMG_Load(IMG("pacman.png"));
+	 loadedSurface = IMG_Load("./pacman.png");
  	if( loadedSurface == NULL ){
- 			printf( "Unable to load image %s! SDL_image Error: %s\n", IMG("pacman.png"), IMG_GetError() );
+ 			printf( "Unable to load image %s! SDL_image Error: %s\n", "./pacman.png", IMG_GetError() );
  		 exit(-1);
  	} else {
  			pacman = SDL_CreateTextureFromSurface(renderer, loadedSurface);
  			SDL_FreeSurface( loadedSurface );
  	}
-	//load powerpacman
-	loadedSurface = IMG_Load(IMG("powerpacman.png"));
- if( loadedSurface == NULL ){
-		 printf( "Unable to load image %s! SDL_image Error: %s\n", IMG("powerpacman.png"), IMG_GetError() );
-		exit(-1);
- } else {
-		 powerpacman = SDL_CreateTextureFromSurface(renderer, loadedSurface);
-		 SDL_FreeSurface( loadedSurface );
- }
 
 	//load lemon
-	loadedSurface = IMG_Load(IMG("lemon.png"));
+	loadedSurface = IMG_Load("./lemon.png");
  if( loadedSurface == NULL ){
-		 printf( "Unable to load image %s! SDL_image Error: %s\n", IMG("lemon.png"), IMG_GetError() );
+		 printf( "Unable to load image %s! SDL_image Error: %s\n", "./lemon.png", IMG_GetError() );
 		exit(-1);
  } else {
 		 lemon = SDL_CreateTextureFromSurface(renderer, loadedSurface);
@@ -99,9 +88,9 @@ int create_board_window(int dim_x, int dim_y){
  }
 
  //load brick
- loadedSurface = IMG_Load(IMG("brick.png"));
+ loadedSurface = IMG_Load("./brick.png");
 if( loadedSurface == NULL ){
-		printf( "Unable to load image %s! SDL_image Error: %s\n", IMG("brick.png"), IMG_GetError() );
+		printf( "Unable to load image %s! SDL_image Error: %s\n", "./brick.png", IMG_GetError() );
 	 exit(-1);
 } else {
 		brick = SDL_CreateTextureFromSurface(renderer, loadedSurface);
@@ -109,9 +98,9 @@ if( loadedSurface == NULL ){
 }
 
 //load brick
-loadedSurface = IMG_Load(IMG("cherry.png"));
+loadedSurface = IMG_Load("./cherry.png");
 if( loadedSurface == NULL ){
-	 printf( "Unable to load image %s! SDL_image Error: %s\n", IMG("cherry.png"), IMG_GetError() );
+	 printf( "Unable to load image %s! SDL_image Error: %s\n", "./cherry.png", IMG_GetError() );
 	exit(-1);
 } else {
 	 cherry = SDL_CreateTextureFromSurface(renderer, loadedSurface);
@@ -198,9 +187,6 @@ void priv_paint_place(int  board_x, int board_y , int r, int g, int b, SDL_Textu
 }
 void paint_pacman(int  board_x, int board_y , int r, int g, int b){
 	priv_paint_place(board_x, board_y , r, g, b, pacman);
-}
-void paint_powerpacman(int  board_x, int board_y , int r, int g, int b){
-	priv_paint_place(board_x, board_y , r, g, b, powerpacman);
 }
 void paint_monster(int  board_x, int board_y , int r, int g, int b){
 	priv_paint_place(board_x, board_y , r, g, b, monster);
