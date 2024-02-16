@@ -3,7 +3,7 @@
 
 
 
-void load_file_board(map *jogo)
+void load_file_board(Map *jogo)
 {
     int i,j=0;
     char buf[100];
@@ -19,6 +19,7 @@ void load_file_board(map *jogo)
 
 	fgets(buf,100,fp);
 	sscanf(buf,"%d %d\n",&(jogo->size.x), &(jogo->size.y));
+	printf("The board has size %dx%d\n",jogo->size.x,jogo->size.y);
 
     // Alocate n collumn pointers first
 	if(!(jogo->board = (int**)malloc(jogo->size.x*sizeof(int*))))
@@ -54,11 +55,15 @@ void load_file_board(map *jogo)
 	jogo->max_players = (int)((jogo->size.x*jogo->size.y + 2 - jogo->nbricks)/4);
 	printf("maxp = %d\n",jogo->max_players);
 
+
 	if (jogo->max_players<2)
 	{
 		printf("Bad board: not enough space to play properly\n");
 		exit(-1);
 	}
+
+	if(jogo->max_players > MAX_PLAYERS)
+		jogo->max_players = MAX_PLAYERS;
 }
 
 

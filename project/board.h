@@ -15,13 +15,12 @@
 #include <time.h>
 #include <limits.h>
 
-#include "configs.h"
 #include "data.h"
 /**
  * Read board file.
  * writes the read map into @param jogo and checks it's integrity for playing
 */
-void load_file_board(map *jogo);
+void load_file_board(Map *jogo);
 
 
 #endif
