@@ -13,6 +13,6 @@
 
 
 void send_message(int sfd, MsgType type, int msg_size, void* load);
-
+int receive_message(int sfd, MsgHeader* msg, void* load);
 
 #endif

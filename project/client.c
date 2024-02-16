@@ -62,19 +62,22 @@ void start_game(int sock_fd)
 {
     int may_play = FALSE;
     MsgHeader msg;
-    char* buffer[MAX_BUFFER_SIZE];// = calloc(50,1);
-    if(buffer == 0)
-    {printf("Calloc for receiving buffer failled. Exiting...\n");exit(0);}
+    char buffer[MAX_BUFFER_SIZE];// = calloc(50,1);
+
 
     while(may_play == FALSE)
     {
 
+        if(receive_message(sock_fd, &msg, (void*)buffer) == FALSE)
+        {
+            may_play == FALSE;
+            continue;
+        }    
 
-
-        if(recv(sock_fd, &msg, sizeof(msg), 0) != sizeof(msg))
-        {printf("Problems in receiving MsgHeader \n"); exit(0);}
-        if(recv(sock_fd, &buffer, msg.size, 0) != msg.size)
-        {printf("Problems in receiving the msg load r\n"); exit(0);}
+        // if(recv(sock_fd, &msg, sizeof(msg), 0) != sizeof(msg))
+        // {printf("Problems in receiving MsgHeader \n"); exit(0);}
+        // if(recv(sock_fd, &buffer, msg.size, 0) != msg.size)
+        // {printf("Problems in receiving the msg load r\n"); exit(0);}
 
         switch (msg.type)
         {
