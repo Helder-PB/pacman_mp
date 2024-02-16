@@ -25,11 +25,11 @@ This project requires knowledge in:
 
 ## Stages of development
 
-- ### Implementation in a UNIX desktop (CURRENT)
+### 1. Implementation in a UNIX desktop (CURRENT)
 
 The game must at least work in a computer, having in mind efficiency.
 
-- ### Implementation in a desktop - ESP32 network
+### 2. Implementation in a desktop - ESP32 network
 
 This stage will require the biggest effort in optimization. Here the relation between the designed arquitecture and the hardware will expose the main bottlenecks.
 Here the main effort will be in:
@@ -38,11 +38,11 @@ Here the main effort will be in:
 - processing power
 - best FreeRTOs usage
 
-- ### Implementation only in FreeRTOs usage
+### 3. Implementation only in FreeRTOs usage
 
 Essentially the previous stage but without the desktop component as a server or client.
 
-- ### Hardware choosal
+### 4. Hardware choosal
 
 Mainly the batteries, display and controls.
 This stage will focus on the best equilibrium in affordability, performance and usability.
