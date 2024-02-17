@@ -8,22 +8,7 @@
 
 #include "data.h"
 #include "net.h"
-
-/**
- * Information that characterizes a client
- * TODO: all
-*/
-typedef struct Player{
-    Entity character[2]; //A mosnter and a pacmans
-    int score;
-    int on;
-    int sockID;
-    Color color;
-    pthread_t* client_t;
-    int id;
-    int fruit;
-    int eat;
-} Player;
+#include "board.h"
 
 
 

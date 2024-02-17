@@ -22,12 +22,12 @@ void load_file_board(Map *jogo)
 	printf("The board has size %dx%d\n",jogo->size.x,jogo->size.y);
 
     // Alocate n collumn pointers first
-	if(!(jogo->board = (int**)malloc(jogo->size.x*sizeof(int*))))
+	if(!(jogo->board = (Square**)malloc(jogo->size.x*sizeof(Square*))))
         {printf("FAILED MALLOC board*\n");exit(0);}
 
     // Allocate each collumn composed of size.y positions
 	for(i=0;i<jogo->size.x;i++)
-		if(!(jogo->board[i] = (int*)malloc(jogo->size.y*sizeof(int))))
+		if(!(jogo->board[i] = (Square*)malloc(jogo->size.y*sizeof(Square))))
             {printf("FAILED MALLOC board\n");exit(0);}
     jogo->nbricks = 0;
     // Populate the map with the occupied positions
@@ -37,11 +37,11 @@ void load_file_board(Map *jogo)
 		{
 			if(buf[i]==' ')
 			{
-				jogo->board[i][j]=0;
+				jogo->board[i][j].type = Empty;
 			}
 			else if(buf[i]=='B')
 			{
-				jogo->board[i][j]=-1;
+				jogo->board[i][j].type = Brick;
 				jogo->nbricks++;
 			}		
 		}
@@ -66,26 +66,45 @@ void load_file_board(Map *jogo)
 		jogo->max_players = MAX_PLAYERS;
 }
 
-
-
-
-
-//Função que retira as cores dos argumentos do cliente e vê se estão
-//dentro de valores admissíveis (0<r,g ou b<256)
-void color_checker(int sock_fd,char *argv[], int* r, int* g, int* b)
+/**
+ * This function is responsible to send the board to the 
+ * client described in the sockfd.
+ * The function used to send it descripted in the *send_func
+*/
+int send_full_state_game(int soctFd, Map *jogo, Player* players)
 {
-	*r = atoi(argv[3]);
-	*g = atoi(argv[4]);
-	*b = atoi(argv[5]);
-	if((*r < 0) || (*r > 256) || (*g < 0) || (*g > 256) || (*b < 0) || (*b > 256))
-		{printf("Color code 0 < r,g,b < 256\n");exit(0);}
+	for(int i = 0; i < jogo->size.x; i++)
+	{
+		for(int j = 0; j < jogo->size.y; j++)
+		{
+			Entity ent;
+			ent.type = jogo->board[i][j].type;
+			ent.location = (Dim){.x = i, .y = j};
+			if(jogo->board[i][j].type != Brick || jogo->board[i][j].type != Empty)
+			{
+				ent.color = players[jogo->board[i][j].id].color;
+			}
+			if(FALSE == send_message(soctFd, *(MsgType[]){Draw} , sizeof(ent), &ent))
+				return FALSE;
+		}
+	}
+	// Now warn the the client may play because the full board was sent
+	if(FALSE == send_message(soctFd, *(MsgType[]){Play} , sizeof(char), (char[]){'a'}))
+		return FALSE;
+	return TRUE;
+}
+
+
+/**
+ * Register entity
+ * uses 4 bytes of information
+ * the 2 most important bytes save the owner of the entity, who
+ * should be the ushort id of a player
+ * the 2 least significant store the id of the entity (fruit, brick, ...)
+ * 
+*/
+
+// void register_entity()
+// {
 	
-}
-
-//Esta função envia as cores do cliente ao servidor
-void color_sender(int sock_fd, int r,int g,int b)
-{
-	if(send(sock_fd, &r, sizeof(int), 0)==-1){printf("Problems in sending r\n"); exit(0);}
-	if(send(sock_fd, &g, sizeof(int), 0)==-1){printf("Problems in sending g\n"); exit(0);}
-	if(send(sock_fd, &b, sizeof(int), 0)==-1){printf("Problems in sending b\n"); exit(0);}
-}
+// }

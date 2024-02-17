@@ -55,6 +55,19 @@ void copy_game(Map* _game)
 }
 
 
+//Função que retira as cores dos argumentos do cliente e vê se estão
+//dentro de valores admissíveis (0<r,g ou b<256)
+void color_checker(int sock_fd,char *argv[], int* r, int* g, int* b)
+{
+	*r = atoi(argv[3]);
+	*g = atoi(argv[4]);
+	*b = atoi(argv[5]);
+	if((*r < 0) || (*r > 256) || (*g < 0) || (*g > 256) || (*b < 0) || (*b > 256))
+		{printf("Color code 0 < r,g,b < 256\n");exit(0);}
+	
+}
+
+
 void reset_player(Player* client)
 {
     client->client_t = NULL;
@@ -106,11 +119,18 @@ void* new_buffer(int size)
  * Stablishing connection with the client, informing it's given information
  * and give the state of the game
 */
-void inform_client_game_state(Player player)
+int inform_client_game_state(int id, Player* players)
 {
 	// Inform board size
-	send_message(player.sockID, Map_dim, sizeof(Dim), &(game->size));
-
+	if((send_message(players[id].sockID, Map_dim, sizeof(Dim), &(game->size)) == FALSE) |
+		(send_full_state_game(players[id].sockID, game ,players) == FALSE))
+	{
+		printf("Couldn't inform player.sockID=%d and id=%d the game state. excluding it...\n",
+					players[id].sockID,players[id].id);
+		return FALSE;
+	}
+	printf("Successfuly informed player %d of the game state\n",id);
+	return TRUE;
 }
 
 
@@ -125,19 +145,20 @@ void *player_thread(void * arg)
     
 
 	pthread_t pacman_timer,monster_timer;
-	int client_playing = TRUE;
+	int client_playing = FALSE;				// The client is not playing YET
 	int id  = *((int*)arg);
 	int i;
 
 	pthread_detach(pthread_self());
-	inform_client_game_state(list_players[id]);
+	// If we can inform the client then he's going to play
+	client_playing = inform_client_game_state(id,list_players);
 
 	sleep(10);
 	MsgHeader msg_h;
 	char buffer[MAX_BUFFER_SIZE];
 
 
-	while(client_playing)
+	while(client_playing == TRUE)
 	{	
 		int rec_s = recv(list_players[id].sockID, &msg_h , sizeof(msg_h), 0);
 		// Receive the size of the header of the message

@@ -28,7 +28,7 @@ server: server.c board.c player.c board.h player.h
 	@echo "running the server stage"
 	$(CC) -c server.c $(COMP_FLAGS)
 
-player: player.c player.h data.h net.h
+player: player.c player.h data.h net.h board.h
 	@echo "running the player stage"
 	$(CC) -c player.c $(COMP_FLAGS)
 
@@ -48,5 +48,5 @@ UI_library.o: $(UI_PATH)/UI_library.c $(UI_PATH)/UI_library.h configs.h
 	@echo "running the UI_library SDL2s stage"
 	$(CC) -c $(UI_PATH)/UI_library.c $(COMP_FLAGS)
 
-clean::
+clear:
 	rm -f *.o && rm -f *.h.gch

@@ -9,15 +9,15 @@
 
 
 //Esta função envia as cores do cliente ao servidor
-void color_sender(int sock_fd, int r,int g,int b)
-{
-	if(send(sock_fd, &r, sizeof(int), 0)==-1)
-    {printf("Problems in sending r\n"); exit(0);}
-	if(send(sock_fd, &g, sizeof(int), 0)==-1)
-    {printf("Problems in sending g\n"); exit(0);}
-	if(send(sock_fd, &b, sizeof(int), 0)==-1)
-    {printf("Problems in sending b\n"); exit(0);}
-}
+// void color_sender(int sock_fd, int r,int g,int b)
+// {
+// 	if(send(sock_fd, &r, sizeof(int), 0)==-1)
+//     {printf("Problems in sending r\n"); exit(0);}
+// 	if(send(sock_fd, &g, sizeof(int), 0)==-1)
+//     {printf("Problems in sending g\n"); exit(0);}
+// 	if(send(sock_fd, &b, sizeof(int), 0)==-1)
+//     {printf("Problems in sending b\n"); exit(0);}
+// }
 
 // Stablish connection from the client to the server
 int stablish_connection(char** argv,struct sockaddr_in *server_addr,int *port_number, int* sock_fd)
@@ -67,12 +67,8 @@ void start_game(int sock_fd)
 
     while(may_play == FALSE)
     {
-
-        if(receive_message(sock_fd, &msg, (void*)buffer) == FALSE)
-        {
-            may_play == FALSE;
-            continue;
-        }    
+  
+        receive_message(sock_fd, &msg, (void*)buffer);
 
         // if(recv(sock_fd, &msg, sizeof(msg), 0) != sizeof(msg))
         // {printf("Problems in receiving MsgHeader \n"); exit(0);}
@@ -81,24 +77,50 @@ void start_game(int sock_fd)
 
         switch (msg.type)
         {
-        case Map_dim:
-            create_board_window(((Dim*)buffer)->x,((Dim*)buffer)->y);
-            may_play = TRUE; // Just to test
-            break;
+            case Map_dim:
+                create_board_window(((Dim*)buffer)->x,((Dim*)buffer)->y);
+                // may_play = TRUE; // Just to test
+                break;
+            
+            case Play: may_play = TRUE;
+                break;
 
-        case Draw:
-            // TODO
-            break;
+            case Draw: //It's to draw an entity
+                // TODO function vector to deal with the board art
+                Entity ent = *((Entity*)buffer);
+                switch (ent.type)
+                {
+                    case Empty: clear_place(ent.location.x,ent.location.y);break;
+                    case Brick: paint_brick(ent.location.x,ent.location.y);break;
+                    case Cherry: paint_cherry(ent.location.x,ent.location.y);break;
+                    case Lemon: paint_lemon(ent.location.x,ent.location.y);break;
+                    case Pacman: paint_pacman(ent.location.x,ent.location.y,
+                                                ent.color.r,ent.color.g,ent.color.b);break;
+                    case Monster: paint_monster(ent.location.x,ent.location.y,
+                                                ent.color.r,ent.color.g,ent.color.b);break;
+                    case SuperPacman:paint_powerpacman(ent.location.x,ent.location.y,
+                                                ent.color.r,ent.color.g,ent.color.b);break;
+                    default:
+                        printf("Error: Requested drawing --%d-- not included in data.h\n",ent.type);
+                        break;
+                }
+                break;
 
-
-        
-        default:
-            break;
+            default:
+                printf("Error: weird message type --%d--\n",msg.type);
+                break;
         }
     }
+}
 
 
-    
+
+//Esta função envia as cores do cliente ao servidor
+void color_sender(int sock_fd, int r,int g,int b)
+{
+	if(send(sock_fd, &r, sizeof(int), 0)==-1){printf("Problems in sending r\n"); exit(0);}
+	if(send(sock_fd, &g, sizeof(int), 0)==-1){printf("Problems in sending g\n"); exit(0);}
+	if(send(sock_fd, &b, sizeof(int), 0)==-1){printf("Problems in sending b\n"); exit(0);}
 }
 
 int main(int argc, char** argv)

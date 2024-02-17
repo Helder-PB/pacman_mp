@@ -4,6 +4,8 @@
  * Here the architecture of communication is exposed, having in consideration
  * the types of messages defined in the "data.h"
  * 
+ * TODO: also include the bind and listen steps in this file
+ * 
 */
 
 
@@ -14,22 +16,23 @@
  * then the real load is sent. The buffer shouldn't exceed MAX_BUFFER_SIZE.
  * 
 */
-void send_message(int sfd, MsgType type, int msg_size, void* load)
+int send_message(int sfd, MsgType type, int load_size, void* load)
 {
 
     MsgHeader msg;
     msg.type = type;
-    msg.size = msg_size;
-    if(msg_size > MAX_BUFFER_SIZE)
+    msg.size = load_size;
+    if(load_size > MAX_BUFFER_SIZE)
     {
-        printf("WARNING! The buffer (%d) exceeds the MAX_BUFFER_SIZE\n",msg_size);
+        printf("WARNING! The buffer (%d) exceeds the MAX_BUFFER_SIZE\n",load_size);
         printf("Aborting message...\n");
-        return;
+        return FALSE;
     }
     if(send(sfd, &msg, sizeof(msg), 0)==-1)
-    {printf("Problems in sending MsgHeader \n"); exit(0);}
-    if(send(sfd, load, msg_size, 0)==-1)
-    {printf("Problems in sending the msg load r\n"); exit(0);}   
+    {printf("Problems in sending MsgHeader \n"); return FALSE;}
+    if(send(sfd, load, load_size, 0)==-1)
+    {printf("Problems in sending the msg load r\n"); return FALSE;}   
+    return TRUE;
 }
 
 /**
