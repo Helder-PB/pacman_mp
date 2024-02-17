@@ -28,6 +28,12 @@ This project requires knowledge in:
 ### 1. Implementation in a UNIX desktop (CURRENT)
 
 The game must at least work in a computer, having in mind efficiency.
+The implemented makefile works as follows:
+
+- `make` to build everything
+- `make s` to build only the server
+- `make c` to build only the client
+- `make clear` to clean some build files
 
 ### 2. Implementation in a desktop - ESP32 network
 
