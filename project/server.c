@@ -25,6 +25,7 @@ int main(int argc, char **argv)
 	int sock_server, sock_fd;                   
     SDL_Event event;
     Player* players = allocate_MAX_PLAYERS();
+    GSem* board_sem = player_board_acess();
 
 
     Map game;                                   // The board

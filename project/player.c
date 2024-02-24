@@ -19,8 +19,9 @@ Color list_colors[MAX_N_COLORS]=
     {139,69,19}     //Sadle brown
 };
 
-Player* list_players;
-Map* game;
+Player* list_players;		// List of all players
+Map* game;					// Map with game state
+GSem* board_sem;			// Semaphores to acess and modify the board state.
 
 /**
  * Allocate memory for all possible new players
@@ -47,6 +48,26 @@ Player* allocate_MAX_PLAYERS()
     return all_possible_clients;
 }
 
+/**
+ * Sort position. 
+ * Receive a position and search in the map for a new EMPTY position 
+ * The blocking of the map editing must be assured outside this function
+ * 
+*/
+Dim sort_new_pos()
+{
+	Dim _pos;
+	int pose_ok = FALSE;
+	while(pose_ok == FALSE)
+	{
+		_pos.x = rand() % game->size.x; 
+		_pos.y = rand() % game->size.y;
+		if(game->board[_pos.x][_pos.y].type == Empty)
+			pose_ok = TRUE;
+	}
+}
+
+
 // Weird chenanigans to get the board here
 // TODO: this is a temporary fix
 void copy_game(Map* _game)
@@ -54,6 +75,11 @@ void copy_game(Map* _game)
 	game = _game;
 }
 
+GSem* player_board_acess()
+{
+	board_sem = board_semaphores();
+	return board_sem;
+}
 
 //Função que retira as cores dos argumentos do cliente e vê se estão
 //dentro de valores admissíveis (0<r,g ou b<256)
@@ -145,6 +171,7 @@ void *player_thread(void * arg)
     
 
 	pthread_t pacman_timer,monster_timer;
+	int rec_flag;							// Flag to indicate the receiving success
 	int client_playing = FALSE;				// The client is not playing YET
 	int id  = *((int*)arg);
 	int i;
@@ -153,24 +180,16 @@ void *player_thread(void * arg)
 	// If we can inform the client then he's going to play
 	client_playing = inform_client_game_state(id,list_players);
 
-	sleep(10);
 	MsgHeader msg_h;
 	char buffer[MAX_BUFFER_SIZE];
+	
 
 
 	while(client_playing == TRUE)
 	{	
-		int rec_s = recv(list_players[id].sockID, &msg_h , sizeof(msg_h), 0);
-		// Receive the size of the header of the message
-		// void* buffer = new_buffer(msg_h.size);
-		// if(buffer == NULL)
-		// {
-		// 	printf("Couldn't allocate buffer to receive ");
-		// }
-		
-		// Verify the type of message
-		int type = msg_h.type;
-		if(recv(list_players[id].sockID, &buffer , msg_h.size, 0) <= 0)
+
+		rec_flag = receive_message(list_players[id].sockID,&msg_h , &buffer);
+		if(rec_flag <= 0)
 		{
 			printf("didn't receive the message corpus. Deleting player\n");
 			client_playing = FALSE;

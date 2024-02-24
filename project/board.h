@@ -25,6 +25,10 @@
  * writes the read map into @param jogo and checks it's integrity for playing
 */
 void load_file_board(Map *jogo);
+
+/**
+ * Reads all the board to send to a player
+*/
 int send_full_state_game(int soctFd, Map *jogo, Player* players);
 
 

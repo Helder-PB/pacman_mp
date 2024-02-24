@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <semaphore.h> 
 
 #include "configs.h"
 
@@ -120,7 +121,7 @@ typedef struct MsgHeader{
  * TODO: all
 */
 typedef struct Player{
-    Entity character[2]; //A mosnter and a pacmans
+    Entity character[4];
     int score;
     int on;
     int sockID;
@@ -131,6 +132,18 @@ typedef struct Player{
     int eat;
 } Player;
 
+
+/**
+ * Semaphores to deal with racing conditions on moving players
+ * all_board semaphore block the access to all the the board.
+ * Ideally there should be 1 semaphore to each square, to 
+ * localize the treatment of race conditions. 
+ * This is a simplification to reduce usage of computing power.
+*/
+typedef struct GSem{
+    sem_t all_board;
+    
+}GSem;
 
 
 

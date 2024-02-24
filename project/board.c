@@ -1,8 +1,16 @@
 #include "board.h"
 
 
-
-
+/**
+ * Semaphore to access the board
+*/
+GSem* board_sem;
+/**
+ * Read the txt.file board.
+ * In an embedded system, txt might not exist if there is no
+ * support for a file system. So the board generation must be different, 
+ * rendering this function specific to the desktop version
+*/
 void load_file_board(Map *jogo)
 {
     int i,j=0;
@@ -67,6 +75,21 @@ void load_file_board(Map *jogo)
 }
 
 /**
+ * This function initiates all the mutexes to access the board
+*/
+GSem* board_semaphores()
+{
+	board_sem = (GSem* )malloc(sizeof(GSem));
+	if (sem_init(board_sem, 0, 1) == -1)
+	{
+		printf("Couldn't init semaphore. Exiting\n");
+		exit(-1);
+	}
+	return board_sem;
+}
+
+
+/**
  * This function is responsible to send the board to the 
  * client described in the sockfd.
  * The function used to send it descripted in the *send_func
@@ -93,6 +116,7 @@ int send_full_state_game(int soctFd, Map *jogo, Player* players)
 		return FALSE;
 	return TRUE;
 }
+
 
 
 /**
